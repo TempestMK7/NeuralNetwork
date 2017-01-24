@@ -41,28 +41,12 @@ public class MnistImageFile extends MnistDbFile {
         cols = readInt();
     }
 
-    /**
-     * Reads the image at the current position.
-     *
-     * @return matrix representing the image
-     * @throws IOException the IOException.
-     */
-    public int[][] readImage() throws IOException {
-        int[][] dat = new int[getRows()][getCols()];
-        for (int i = 0; i < getCols(); i++) {
-            for (int j = 0; j < getRows(); j++) {
-                dat[i][j] = readUnsignedByte();
-            }
-        }
-        return dat;
-    }
-
     public int[] readImageAsDoubleArray() throws IOException {
         int[] dat = new int[getRows() * getCols()];
         for (int x = 0; x < getRows(); x++) {
             for (int y = 0; y < getCols(); y++) {
                 int index = (x * getCols()) + y;
-                dat[index] = readUnsignedByte() > 30 ? 1 : 0;
+                dat[index] = readUnsignedByte() > 30 ? 1 : -1;
             }
         }
         return dat;
@@ -81,22 +65,6 @@ public class MnistImageFile extends MnistDbFile {
             read(out[i]);
         }
         return out;
-    }
-
-    /**
-     * Move the cursor to the next image.
-     * @throws IOException the IOException.
-     */
-    public void nextImage() throws IOException {
-        super.next();
-    }
-
-    /**
-     * Move the cursor to the previous image.
-     * @throws IOException the IOException.
-     */
-    public void prevImage() throws IOException {
-        super.prev();
     }
 
     @Override

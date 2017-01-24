@@ -52,31 +52,6 @@ public class MnistManager {
 
     private byte[][] imagesArr;
     private int[] labelsArr;
-    private static final int HEADER_SIZE = 8;
-
-    /**
-     * Writes the given image in the given file using the PPM data format.
-     *
-     * @param image an array containing the values of the image to be written.
-     * @param ppmFileName the name of the file to be written to.
-     * @throws IOException the IOException.
-     */
-    public static void writeImageToPpm(int[][] image, String ppmFileName) throws IOException {
-        try (BufferedWriter ppmOut = new BufferedWriter(new FileWriter(ppmFileName))) {
-            int rows = image.length;
-            int cols = image[0].length;
-            ppmOut.write("P3\n");
-            ppmOut.write("" + rows + " " + cols + " 255\n");
-            for (int i = 0; i < rows; i++) {
-                StringBuilder s = new StringBuilder();
-                for (int j = 0; j < cols; j++) {
-                    s.append(image[i][j] + " " + image[i][j] + " " + image[i][j] + "  ");
-                }
-                ppmOut.write(s.toString());
-            }
-        }
-
-    }
 
     /**
      * Constructs an instance managing the two given data files. Supports <code>NULL</code> value for one of the
@@ -103,27 +78,11 @@ public class MnistManager {
         this(imagesFile,labelsFile,true);
     }
 
-    /**
-     * Reads the current image.
-     * @return matrix
-     * @throws IOException the IOException.
-     */
-    public int[][] readImage() throws IOException {
-        if (images == null) {
-            throw new IllegalStateException("Images file not initialized.");
-        }
-        return images.readImage();
-    }
-
     public int[] readImageAsDoubleArray() throws IOException {
         if (images == null) {
             throw new IllegalStateException("Images file not initialized.");
         }
         return images.readImageAsDoubleArray();
-    }
-
-    public byte[] readImageUnsafe(int i){
-        return imagesArr[i];
     }
 
     /**
@@ -147,24 +106,12 @@ public class MnistManager {
         return labels.readLabel();
     }
 
-    public int readLabel(int i){
-        return labelsArr[i];
-    }
-
     /**
      * Get the underlying images file as {@link MnistImageFile}.
      * @return {@link MnistImageFile}.
      */
     public MnistImageFile getImages() {
         return images;
-    }
-
-    /**
-     * Get the underlying labels file as {@link MnistLabelFile}.
-     * @return {@link MnistLabelFile}.
-     */
-    public MnistLabelFile getLabels() {
-        return labels;
     }
 
     /**

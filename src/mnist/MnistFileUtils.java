@@ -20,13 +20,15 @@ public class MnistFileUtils {
             MnistManager manager = new MnistManager("train-images.idx3-ubyte", "train-labels.idx1-ubyte");
             int numPixels = manager.getImages().getCols() * manager.getImages().getRows();
             int[][] inputImages = new int[MnistManager.NUM_EXAMPLES][numPixels];
-            int[][] inputExpected = new int[MnistManager.NUM_EXAMPLES][10];
+            float[][] inputExpected = new float[MnistManager.NUM_EXAMPLES][10];
             for (int i = 0; i < MnistManager.NUM_EXAMPLES; i++) {
                 manager.setCurrent(i);
                 int[] image = manager.readImageAsDoubleArray();
-                int[] expected = new int[10];
+                float[] expected = new float[10];
                 int labelValue = manager.readLabel();
-                expected[labelValue] = 1;
+                for (int j = 0; j < 10; j++) {
+                    expected[j] = labelValue == j ? 0.9f : 0.1f;
+                }
 
                 inputImages[i] = image;
                 inputExpected[i] = expected;
@@ -55,14 +57,16 @@ public class MnistFileUtils {
             MnistManager manager = new MnistManager("t10k-images.idx3-ubyte", "t10k-labels.idx1-ubyte", false);
             int numPixels = manager.getImages().getCols() * manager.getImages().getRows();
             int[][] testImages = new int[MnistManager.NUM_EXAMPLES_TEST][numPixels];
-            int[][] testExpected = new int[MnistManager.NUM_EXAMPLES_TEST][10];
+            float[][] testExpected = new float[MnistManager.NUM_EXAMPLES_TEST][10];
 
             for (int i = 0; i < MnistManager.NUM_EXAMPLES_TEST; i++) {
                 manager.setCurrent(i);
                 int[] image = manager.readImageAsDoubleArray();
-                int[] expected = new int[10];
+                float[] expected = new float[10];
                 int labelValue = manager.readLabel();
-                expected[labelValue] = 1;
+                for (int j = 0; j < 10; j++) {
+                    expected[j] = labelValue == j ? 0.9f : 0.1f;
+                }
 
                 testImages[i] = image;
                 testExpected[i] = expected;
@@ -99,14 +103,14 @@ public class MnistFileUtils {
      * Returns the training inputs from the MNIST handwriting recognition database.
      * @return the training inputs from the MNIST handwriting recognition database.
      */
-    public static double[][] readMNISTTrainingImages() {
+    public static float[][] readMNISTTrainingImages() {
         ensureFilesPresent();
         System.out.println("Opening MNIST training inputs.");
         Gson gson = new Gson();
         try {
             BufferedReader reader = new BufferedReader(new FileReader(TRAINING_IMAGES));
             String json = reader.readLine();
-            return gson.fromJson(json, double[][].class);
+            return gson.fromJson(json, float[][].class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -117,14 +121,14 @@ public class MnistFileUtils {
      * Returns the training labels from the MNIST handwriting recognition database.
      * @return the training labels from the MNIST handwriting recognition database.
      */
-    public static double[][] readMNISTTrainingLabels() {
+    public static float[][] readMNISTTrainingLabels() {
         ensureFilesPresent();
         System.out.println("Opening MNIST training labels.");
         Gson gson = new Gson();
         try {
             BufferedReader reader = new BufferedReader(new FileReader(TRAINING_LABELS));
             String json = reader.readLine();
-            return gson.fromJson(json, double[][].class);
+            return gson.fromJson(json, float[][].class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -135,14 +139,14 @@ public class MnistFileUtils {
      * Returns the validation inputs from the MNIST handwriting recognition database.
      * @return the validation inputs from the MNIST handwriting recognition database.
      */
-    public static double[][] readMNISTTestImages() {
+    public static float[][] readMNISTTestImages() {
         ensureFilesPresent();
         System.out.println("Opening MNIST validation inputs.");
         Gson gson = new Gson();
         try {
             BufferedReader reader = new BufferedReader(new FileReader(TEST_IMAGES));
             String json = reader.readLine();
-            return gson.fromJson(json, double[][].class);
+            return gson.fromJson(json, float[][].class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -153,14 +157,14 @@ public class MnistFileUtils {
      * Returns the validation labels from the MNIST handwriting recognition database.
      * @return the validation labels from the MNIST handwriting recognition database.
      */
-    public static double[][] readMNISTTestLabels() {
+    public static float[][] readMNISTTestLabels() {
         ensureFilesPresent();
         System.out.println("Opening MNIST validation labels.");
         Gson gson = new Gson();
         try {
             BufferedReader reader = new BufferedReader(new FileReader(TEST_LABELS));
             String json = reader.readLine();
-            return gson.fromJson(json, double[][].class);
+            return gson.fromJson(json, float[][].class);
         } catch (IOException e) {
             e.printStackTrace();
         }
