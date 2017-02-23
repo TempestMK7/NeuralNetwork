@@ -3,10 +3,10 @@ package examples;
 import mnist.MnistFileUtils;
 import network.Network;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Scanner;
 
 /**
  * This file contains some methods that can be sued to quickly create, train, improve, and test a neural network against
@@ -17,6 +17,8 @@ public class MnistExampleUtils {
     private static final String MNIST_NETWORK_FILE_NAME = "mnist-network.txt";
     private static final int MNIST_INPUT_SIZE = 28*28;
     private static final int MNIST_OUTPUT_SIZE = 10;
+
+    private static final NumberFormat FORMAT = new DecimalFormat("0.000");
 
     /**
      * Creates a new neural network and trains it against the MNIST handwriting recognition database.  The resulting
@@ -35,11 +37,9 @@ public class MnistExampleUtils {
         layerSizes[0] = MNIST_INPUT_SIZE;
         layerSizes[layerSizes.length - 1] = MNIST_OUTPUT_SIZE;
         Network network = new Network(layerSizes);
-        network.validate(trainingInput, trainingLabels, numThreads);
         network.validate(validationInput, validationLabels, numThreads);
         for (int i = 0; i < trainingEpochs; i++) {
             network.learn(trainingInput, trainingLabels, learningRate, numThreads, calculationsPerThread);
-            network.validate(trainingInput, trainingLabels, numThreads);
             network.validate(validationInput, validationLabels, numThreads);
             try {
                 FileWriter writer = new FileWriter(MNIST_NETWORK_FILE_NAME);
@@ -68,11 +68,9 @@ public class MnistExampleUtils {
             e.printStackTrace();
         }
         if (network == null) return;
-        network.validate(trainingInput, trainingLabels, numThreads);
         network.validate(validationInput, validationLabels, numThreads);
         for (int i = 0; i < trainingEpochs; i++) {
             network.learn(trainingInput, trainingLabels, learningRate, numThreads, calculationsPerThread);
-            network.validate(trainingInput, trainingLabels, numThreads);
             network.validate(validationInput, validationLabels, numThreads);
             try {
                 FileWriter writer = new FileWriter(MNIST_NETWORK_FILE_NAME);
@@ -98,5 +96,51 @@ public class MnistExampleUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void showcaseNetwork(boolean onlyFailures) {
+        Network network;
+        Scanner kb = new Scanner(System.in);
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(MNIST_NETWORK_FILE_NAME));
+            String json = reader.readLine();
+            network = Network.loadFromJson(json);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+        float[][] validationInput = MnistFileUtils.readMNISTTestImages();
+        float[][] validationLabels = MnistFileUtils.readMNISTTestLabels();
+        if (validationInput == null || validationLabels == null) return;
+
+        for (int image = 0; image < validationInput.length; image++) {
+            int label = evaluateLabel(validationLabels[image], false);
+            int guess = evaluateLabel(network.ask(validationInput[image]), false);
+            if (onlyFailures && label == guess) continue;
+            drawImage(validationInput[image]);
+            kb.nextLine();
+            System.out.println("Label: " + label);
+            System.out.println("Guess: " + guess);
+            evaluateLabel(network.ask(validationInput[image]), true);
+            kb.nextLine();
+        }
+    }
+
+    public static void drawImage(float[] image) {
+        for (int i = 0; i < 784; i++) {
+            if (i % 28 == 0 && i != 0) System.out.print("\n");
+            System.out.print(image[i] == 1 ? "▓" : "░");
+        }
+    }
+
+    public static int evaluateLabel(float[] label, boolean readArray) {
+        if (readArray) System.out.print("Raw Output: ");
+        int biggest = 0;
+        for (int i = 0; i < label.length; i++) {
+            if (readArray) System.out.print(FORMAT.format(label[i]) + ", ");
+            if (label[i] > label[biggest]) biggest = i;
+        }
+        if (readArray) System.out.print("\n");
+        return biggest;
     }
 }

@@ -43,6 +43,8 @@ public class MnistFileUtils {
             writer = new FileWriter(new File(TRAINING_LABELS));
             writer.write(gson.toJson(inputExpected));
             writer.close();
+
+            manager.close();
         } catch(IOException e) {
             e.printStackTrace();
         }
@@ -81,6 +83,8 @@ public class MnistFileUtils {
             writer = new FileWriter(new File(TEST_LABELS));
             writer.write(gson.toJson(testExpected));
             writer.close();
+
+            manager.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

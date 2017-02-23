@@ -46,7 +46,7 @@ public class MnistImageFile extends MnistDbFile {
         for (int x = 0; x < getRows(); x++) {
             for (int y = 0; y < getCols(); y++) {
                 int index = (x * getCols()) + y;
-                dat[index] = readUnsignedByte() > 30 ? 1 : -1;
+                dat[index] = readUnsignedByte() > 1 ? 1 : -1;
             }
         }
         return dat;
